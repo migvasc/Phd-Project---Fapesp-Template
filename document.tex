@@ -1,0 +1,374 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+\usepackage{setspace}
+\usepackage{times}
+\usepackage[sort]{natbib}
+\usepackage{url}
+\bibliographystyle{abbrvnat}
+\setcitestyle{numbers,square}
+\usepackage{indentfirst} 
+\usepackage{microtype}   
+\usepackage{booktabs, multirow, rotating}
+\usepackage{hyperref}
+
+
+\newcommand{\dc}[2][noinline]{\todo[color=blue!25,#1]{DC: #2}}
+
+\title{Scheduling for cloud computing platforms considering solar farms and batteries}
+\author{Miguel Felipe Silva Vasconcelos}
+\date{}
+\begin{document}
+%\maketitle
+
+\begin{center}
+    \begin{center}
+        { \sc Universidade de São Paulo} \\
+        { \sc Escola de Artes, Ciências e Humanidades}\\[0.7cm]
+
+        % Título.
+        {\large \sc Projeto de Pesquisa FAPESP}\\
+        \rule{0.9\linewidth}{0.5mm} \\[0.4cm]
+        {\large \bfseries Scheduling for cloud computing platforms considering solar farms and batteries}\\
+        \rule{0.9\linewidth}{0.5mm} \\[0.4cm]
+        {\small \sc Linha de Fomento: Bolsa no País - Regular - Doutorado Direto}\\[0.4cm]
+        { \emph{ Candidato:} Miguel Felipe Silva Vasconcelos\\
+         \emph{ Orientador:} Daniel de Angelis Cordeiro}\\[1.6cm]
+    \end{center}
+\end{center}
+
+
+\begin{center}
+    {\bf  \textit{Abstract}}
+\end{center}
+
+Cloud computing platforms support the majority of services and applications that we use every day, such as social networks, e-mail, video games, and video streaming, and is a key element for the development of smart cities. However, cloud computing platforms consume a massive amount of electricity: the data centers that host these platforms consume 1\% of the global power generated. In order to reduce the costs and environmental impact resulting from this energy consumption, since most of the electricity comes from nonrenewable sources, some companies, such as Amazon and Facebook, are studying the possibility of installing solar panels in their data centers. Nevertheless, the availability of solar energy is not constant, resulting in challenges in scheduling tasks to reduce nonrenewable energy consumption. Some data centers have batteries that can be used to store renewable energy, but they self-discharge and lose their capacity as time goes on, which characterizes another challenge: deciding when to store or use battery power. Based on this context, the objective of this project is to develop a multi-objective scheduling algorithm for virtual machines that are submitted to geographically distributed cloud computing platforms, considering that they have batteries and renewable energy supply by solar panels, aiming at the reduction of brown energy consumption and the environmental impact. This project presents as a secondary objective to estimate the dimensions of solar panels and batteries, given the size of data centers and the number of virtual machines submissions.\\
+
+
+\section{Introduction and Justification}
+\doublespacing
+
+
+Cloud computing has revolutionized the industrial and academic world of Information Technology with its ability to provide large amounts of computing resources on demand. Most of the applications and services we use every day that feature more and more users, such as social networking, e-mail, video games, and video streaming, are supported by cloud computing platforms.
+
+The Future Internet, a key element for the realization of smart cities, will also rely heavily on cloud computing platforms to address the dynamic demand of computing resources (storage and processing) required by its applications, including applications of Big Data and Internet of Things, since the number of users can be as many as the number of inhabitants in a city \citep{the_future_internet_book}.
+
+
+Cloud computing platforms consist of on-demand computing and storage resources accessible on the Internet. Users access these resources through virtual machines (VMs), characterized by its requirements of execution time, memory, and CPU, simulating a computing system. This VM encapsulation provides ease of use, computing tools, and security systems, completely obscuring the technical complexity of computing for the end-user. 
+
+
+Another advantage of using cloud computing is the scalability that can be achieved with such platforms at no additional cost, for example, a researcher with a simulation made up of several batch tasks could perform it in less time on a Cloud Computing platform. On such platforms, the cost of using 1,000 servers for one hour is typically the same as using one server for 1,000 hours.
+
+
+Despite all its benefits, cloud computing poses a significant challenge: to reduce the massive electricity consumption of the facilities where the platforms are hosted---data centers. In 2018, data centers consumed an estimated 198 TWh, about 1\% of the global electricity demand \citep{IEA}. For comparison purposes, in the same period, the electricity demand of the Brazilan state of São Paulo, with over 45 million inhabitants, considering all sectors (residential, commercial, rural, industrial, public lighting, public power, public service) was of 132 TWh \citep{SIMA}.
+
+
+This electricity consumption results in costs for the data center operators and is a source of pollution and greenhouse gas emissions, since most of the energy used comes from nonrenewable sources (brown energy) \citep{Greenpeace}, and goes against the sustainability goal of smart cities \citep{smart_cities_n_future_internet}.  A possible solution to reduce costs and the negative impacts on global warming is to use renewable energy (green energy). Indeed, in recent years, major cloud technology companies as Amazon AWS, Apple, and Microsoft have been involved in projects to deploy solar panels in their data centers \citep{Greenpeace}. However, solar energy is not available all the time, and variables such as the time of the day, climate, season, and the geographic location of the data center are responsible for its intermittency.
+
+A possible approach to address the intermittency issue is the adoption of batteries in data centers to store renewable energy. The energy from the batteries can be used when there is no production of solar power, or the demand is greater than the production. Nevertheless, this approach also presents some challenges given the characteristics of the batteries, such as the self-discharge rate (they lose stored energy over time when not used) and aging (their maximum capacity decrease over time).
+
+Geographic load balancing is another approach that can be used to deal with renewable energy intermittency. In order to understand it, we need to further detail the activity on cloud computing platforms: it consists of executing VMs over time. After submission, the VMs are distributed (allocated) between the data centers and their servers. Succeeding allocations, servers start to execute the VMs considering their memory and CPU availability. Furthermore, schedulers can migrate a running VM to another server or even another data center without interrupting its execution and with minor delays. VM migration consists of data exchanges between two servers and a parallel transition execution on both servers.
+
+Modern cloud computing platforms consist of several geographically distributed data centers, and the geographic load balancing approach explores this characteristic. Since these geographically distributed clouds can quickly transfer their workload (migrate VMs) from one data center to another according to different criteria, including solar power generation, the idea is to make consumption fit the photovoltaic generation. Thus, an important issue concerns the prediction of solar energy production. This production is, to some extent, predictable, but uncertainty must be taken into account. Scientific models of weather forecasting consider uncertainty using stochastic models with truncated normal distribution laws. Such models make it possible to formulate the reliability of the forecast over time and to include it in the scheduling decision
+
+This research project incorporates both approaches, geographic load balancing and adoption of batteries in data centers, in the scheduling decision for the virtual machines submitted to geographically distributed cloud computing platforms, i.e., the decision of when and where (which server and data center) each VM will be executed, aiming at reducing the brown energy consumption and, therefore, the costs and the environmental impact caused by cloud computing platforms. VM arrivals are considered unpredictable, and no assumptions will be made regarding future submissions. Each data center has its solar farm---installation with multiple solar panels---and batteries to store renewable energy. The scheduling algorithm will be online to address the dynamic behavior of virtual machine submissions, the intermittent availability of solar energy, and the challenges using batteries.
+
+Virtual machine scheduling is an NP-Complete problem, and has the following restrictions: a finite number of data centers, as well as the servers and computing resources of each server (memory and CPU); the number and frequency of VMs submissions is not known a priori; VMs have execution deadlines; solar power generation is intermittent; batteries used to store solar energy discharge over time and lose capacity due to aging; and migrating virtual machines between data centers has electricity and network costs.
+
+\subsection{Objective}
+
+The main objective is to develop a multi-objective scheduling algorithm for the virtual machines submitted to cloud computing platforms, considering that the data centers have batteries and solar panels, aiming at reducing nonrenewable energy consumption.
+
+Regarding the criteria to be optimized by the multi-objective algorithm, the main ones are the reduction of brown energy use and the quality of service, in terms of guaranteeing the execution of virtual machines considering their respective execution deadlines,
+
+More specifically, these secondary objectives will be considered:
+
+\begin{itemize}
+
+\item Develop models for: i) network connections and distributed cloud computing platforms; ii) data center power supply model; (iii) model for batteries including charge and discharge rates, self-discharge and aging of the batteries;
+
+\item Develop scheduling heuristics for virtual machines that are submitted to data centers;
+
+\item Develop algorithms to decide when to use or recharge the batteries;
+
+\item Estimate, using the developed models, the dimensions of solar panels and batteries given as input the size of the data center and the volume of virtual machine requests it receives, targeting a reduction in the nonrenewable energy consumption.
+
+\end{itemize}
+
+The proposed multi-objective algorithm should provide a more significant reduction in nonrenewable energy consumption than the state of the art approaches.
+
+\subsection{Document Organization}
+
+This document has five sections. The first section presents an introduction to the topic and the objectives of the research. The fundamental concepts regarding scheduling in geographically distributed cloud computing platforms are available in the second section. Section 3 presents a summary of the state of the art of scheduling virtual machines on geographically distributed cloud computing platforms through an exploratory review. The methodology of the project, including how the project will be assessed, where the results can be shared, and the schedule, is present in section four. Finally, the last section contains the details of the collaboration with other research groups.
+
+
+\section{Main Concepts}
+
+This project proposes the development of scheduling heuristics for the VMs submitted to geographically distributed cloud computing platforms in order to reduce the brown energy consumption. Therefore, the concepts of cloud computing, scheduling for cloud computing platforms and server consolidation are mandatory to understand this project. 
+\subsection{Cloud computing}
+
+Cloud computing was introduced by the industry to address the most significant problems of e-commerce found at the time. Despite its revolutionary aspects of information technology, cloud computing is not classified as a new paradigm in computer science research. As a matter of fact, cloud computing is the evolution of research into different fields of computer science, such as clusters, grids, autonomous computing, ubiquitous computing. 
+
+Cloud computing platforms generally support services in three distinct levels: IaaS (Infrastructure as a Service), PaaS (Platform as a Service) and SaaS (Software as a Service) \citep{fos08}. 
+
+In the first level, Infrastructure as a Service (IaaS), the platforms grants the user access to hardware resources (such as processing and storage) and charge them for their usage. Services as Amazon EC2 (Elastic Cloud Computing) Service and Amazon S3 (Simple Storage Service) are examples of IaaS clouds.  
+
+At the second level, Platform as a Service (PaaS), the provider supports complete development, testing, and deployment environment for the application developer, which usually means that the developer will have to follow a specific fixed development model and accept restrictions on how to model the software in exchange for the scalability provided. An example is the Google App Engine. 
+
+Finally, at the third level, Software as a Service (SaaS), specific applications are offered to users via the Internet and the rate is proportional to the use of the application. We can cite as examples as Google Docs office applications.
+
+\subsection{Scheduling for cloud computing platforms}
+
+Scheduling problems are combinatorial optimization problems where, given the description of the characteristics of a computational resource set ($\alpha$) and a task set ($\beta$), the objective is to find an allocation (in time) of resources to tasks that minimize some optimization criteria ($\gamma$). These problems are denoted, generally, using the $\alpha$ $\vert$ $\beta$ $\vert$ $\gamma$ notation, introduced by Graham \citep{graham}.
+
+
+The most common criterion studied in problems of high-performance computing is called makespan (also denoted by Cmax), which indicates the time when the last task that makes up an application finishes its execution. When the available computational resources are known previously, and we are interested in minimizing makespan---typically the case in scheduling problems in cluster clusters and computational grids---the problem is strongly NP-complete \citep{Garey}. This problem is denoted by P $\vert$ $\vert$ Cmax in Graham's notation.
+
+It is known---from the work of \citet {graham} and \citet {Garey}---that the class of greedy algorithms known as list algorithms provides fast and efficient heuristics for scheduling tasks on parallel computers. These algorithms have a $2 -1 /m$ approximation guarantee for the worst case, but are remarkably effective in practice, especially when the ratio of the number of tasks to the number of available computational resources is large. Among the most commonly used list algorithms are the Longest Processing Time first (LPT) and Shortest Processing Time first (SPT),  for homogeneous platforms, and the Heterogeneous Earliest Finish Time (HEFT) algorithm, for heterogeneous platforms.
+
+
+As shown by \citet {fos08}, one of the pioneers in grid research, the problems intrinsic to Cloud Computing platforms are different from the problems encountered in grid computing. As far as we know, proposed scheduling models for computational grids (such as those proposed in \citet{Buyya}, \citet{Ramirez}) are not robust in situations where the amount of computational resources is variable, as is the case of cloud computing.
+
+We are interested in modeling the scheduling problem on platforms where the number of computational resources may vary during the execution of an application. For example, with a scalable application that may, theoretically, require more resources from a Cloud Computing platform if, at any given time, the amount of work to be performed exceeds a certain pre-established threshold. Such models should take into account the volatility of resources over time and the scalability characteristics required by traditional high-performance applications and the operating costs of such platforms.
+
+\subsection{Server Consolidation}
+
+As a consequence of task variability, Cloud Computing scheduling models must also take into account performance prediction and server consolidation issues. One of the technical aspects that have allowed Cloud Computing providers to succeed is the ability to offer computing resources in a virtualized way. Users have access to resources available through virtual machines, which isolate the application execution environment from the execution environments of other users. VM allows Cloud Computing providers to optimize the use of their infrastructure by applying server consolidation strategies, i.e., assigning more than one virtual machine to run on the same physical machine \citep{BKB07, Cla05, FERRETO20111027}.
+
+Load prediction techniques and systems play a crucial role in computing resource management. Consolidation and elasticity in resource allocation depend on a prediction system to determine when the number of resources allocated to a service may be increased or decreased. Efficient resource management results in reduced costs and increased quality of services consumed by users.
+
+The server consolidation problem is a problem that, theoretically, is derived from the classic combinatorial optimization problem called Vector Bin Packing (VBP). In the Vector Bin Packing problem, objects of different volumes should be stored in a finite number of containers so that the number of containers used is as small as possible. The server scheduling consolidation problem is a type of VBP, where containers (computational resources) may have different capacities (such as CPU, memory). The purpose of the resulting scheduling problem remains to minimize the number of computational resources used \citep{Cohen2011MultiorganizationSA,  Ramirez, Shen}.
+
+\section{Related Work}
+
+This section will present the results of conducting an exploratory review to understand the state of the art in scheduling techniques used to reduce total energy consumption and increase renewable energy usage on cloud computing platforms. 
+
+\subsection{State of the art}
+
+The work of \citet{SAGITTA} aims to minimize renewable energy loss by scheduling the workload across geographically distributed data centers. To achieve this goal, they propose SAGITTA, which uses a stochastic approach to estimate renewable energy production and a greedy heuristic to allocate resources to meet the demand of virtual machines.
+
+The authors considered data centers supplied by renewable and nonrenewable energy sources. Regarding servers, they were considered homogeneous in terms of computational capacity and energy consumption. Virtual machines are identical, that is, they have the same characteristics as computational requirements and runtime, and its requests submission rate is unpredictable.
+
+The work strategy aims, using a centralized system, to decide which data center servers should be turned on or off in order to reduce the loss of renewable energy.  The algorithm checks whether the number of powered servers is sufficient to meet the virtual machine requests demand for a given time interval. If not, data centers will be selected to power servers until the demand is met. If the number of servers currently powered is already higher than the demand, servers will be selected to be shut down. 
+
+After determining the number and which servers to turn on or off, the algorithm validates whether it is possible to migrate workload execution between data centers, that is, whether it is possible to execute the workload from one server in another data center that has greater availability of renewable energy. However, if a large number of migrations occur, the quality of service will decline due to migration costs. Given this scenario, the authors also use a criterion to limit the number of migrations.
+
+In order to perform their experiments, the authors used the DCSim\footnote{\url{https://github.com/digs-uwo/dcsim}} simulator, with workload data from ClarkNet HTTP\footnote{\url{ftp://ita.ee.lbl.gov/html/contrib/ClarkNet-HTTP.html}} and solar power generation data from the University of Nantes in France\footnote{\url{http://photovolta2.univ-nantes.fr/}}.
+
+SAGITTA \citep{SAGITTA} used as baseline two variations of the Round Robin algorithm. The first applies Round Robin at the virtual machine level, where it assigns to each data center, sequentially, one virtual machine until all have been assigned. The second approach applies Round Robin at the data center level. It sorts the data centers in descending order by renewable energy availability, and after that, for each data center, the maximum number of virtual machines is allocated according to the resources of the servers.
+
+The work of \citet{NEMESIS} aims to optimize renewable and nonrenewable energy consumption in geographically distributed data centers. The authors propose an approach that combines greedy heuristics for VM allocation, a VM migration algorithm that considers network costs, a consolidation algorithm to reduce the number of powered servers and a stochastic model of solar power generation.
+
+NEMESIS---denomination gave the proposed solution---determines the allocation of virtual machines and possible migrations based on comparisons of the expected cost of energy. Regarding solar energy production, the authors also use a stochastic approach.
+
+Initially, the algorithm determines a pre-allocation of virtual machines in data centers: it sorts virtual machines in descending order according to their volume (multiplication of memory and processing requirement) and servers in ascending order according to the same criteria, virtual machines are then assigned using the first-fit approach. When pre-allocation finishes, the algorithm tries to reduce the number of powered servers. First, all virtual machines are sorted in descending order of volume. After sorting, the algorithm validates if the server where the VM is located is not fully utilized. If so, the algorithm attempts to find a powered server that can run the virtual machine in a data center that has more renewable energy available. In the case that the virtual machine execution in the other server reduces overall power consumption, the algorithm changes its allocation. After the VMs start running, the algorithm checks if they can be migrated between data centers to promote a reduction in nonrenewable power consumption. Finally, NEMESIS attempts to migrate virtual machines internally within the data center to minimize the number of powered servers
+
+The authors considered that the servers are homogeneous concerning computational characteristics (memory and processor) and power consumption. Each data center has a distinct number of servers and has local solar panels as well as is supplied by nonrenewable energy sources. Virtual machines are heterogeneous for memory, processor, and runtime requirements, which are previously known.
+
+To perform their experiments, the authors used the SimGrid\footnote{\url{https://simgrid.org/}} simulator with solar power generation data also from the University of Nantes and VM workload from the databases of Google\footnote{\url{https://cloud.google.com/public-datasets}} and Eucalyptus IaaS\footnote{\url{https://sites.cs.ucsb.edu/~rich/workload/}}.
+
+NEMESIS \citep{NEMESIS} was compared to four greedy heuristics. The first and the second were, respectively, Round-Robin and First Fit. The third was Modified Best Fit Decreasing (MBFD)---state-of-the-art work that uses a modification of the Best Fit Decreasing algorithm to allocate virtual machines and perform server consolidation. The last heuristic was OOD-MARE, another work from the state-of-the-art, combining a Most Available Renewable Energy (MARE) algorithm that assigns VMs to data 
+
+
+The SCORPIOUS study  \citep{SCORPIOUS} is a continuation of NEMESIS and aims to reduce nonrenewable energy consumption as well as renewable energy loss by using two main strategies. The first is the sharing of excess renewable energy generated by geographically distributed data centers that have solar panels installed, and the second is scheduling virtual machines to minimize the number of servers powered.
+
+Using SmartGrid's collective self-consumption, an energy pool is created, in which data centers can share the excess renewable energy generated so that other data centers that are under production can use it. 
+
+The authors also used the SimGrid simulator with solar power generation data from the University of Nantes and VM workload from the Google database.
+
+Regarding the baseline, SCORPIOUS used three approaches for Round Robin and First Fit. The first without using the power pool and without shutting down idle servers---representing solutions that are adopted by companies today. The second without using the power pool but shutting down idle servers---represents works from the state-of-the-art. Finally, the third approach using power pooling and shutting down idle servers---represents state-of-the-art algorithms combined with the approach to share renewable power between data centers. The algorithm Modified Best Fit Decreasing was also used as a baseline.
+
+The work from \citet{PIKA} aims to reduce nonrenewable energy consumption for a distributed computing cloud infrastructure through the use of micro data centers. Generally, having between 20 and 50 servers, they are installed close to clients with low connection latency and higher information flow. Due to its size, the work suggests that the adoption of renewable energy sources is interesting to reduce the environmental impact and costs of these facilities.
+
+The work adopts overcommit techniques, aiming to reduce the number of powered servers, and opportunistic scheduling, to match the availability of renewable energy with the execution of tasks, applied to the requests of virtual machines. These requests were classified into two groups: i) web tasks, which run continuously, as web services; and ii) batch tasks, which may be interrupted or delayed, but still have a deadline constraint, such as simulations of scientific experiments.
+
+The proposed solution uses one pool for each task type. Web tasks have a higher priority for server allocation. If there is no execution availability on powered servers for such a request, first, the algorithm tries to deallocate batch tasks that are not yet close to completion. However, if there is no availability yet, a new server is turned on. Batch tasks that are not close to the deadline are scheduled to run according to renewable energy availability, and when they are close to the deadline, they are converted into web tasks. New servers can be powered up according to renewable energy availability and pending tasks.
+
+The authors developed a simulator to perform the experiments and used databases from the University of Nantes for both the VM workload and solar power generation data. The authors used as a baseline the greedy algorithm First Fit Decreasing.
+
+The study developed by \citet{li2017} is a continuation of the work from \citet{PIKA}  with a new approach: storing solar energy in batteries for use at night or during the day when energy production does not meet demand from the data center. The study also looks at which approach is most efficient, whether it is using opportunistic only scheduling, only batteries, or whether it is possible to combine both strategies. These strategies are evaluated in terms of renewable energy use and total energy cost to estimate whether losses due to battery efficiency outperform losses due to migration costs generated by opportunistic scheduling policies.
+
+The proposed solution also distinguishes tasks into two types, batch and web. When there is not enough solar power to meet the demand, batch tasks that are not close to the deadline are suspended and VM consolidation is performed to reduce the number of powered servers. Otherwise, all tasks are executed. If solar energy is not available to supply the workload, which consists of web and batch tasks near the deadline, the energy stored in the batteries is used. If the energy from the batteries cannot also supply the demand, nonrenewable energy is used.
+
+The authors also developed a simulator and used solar power generation data from the University of Nantes, but used VM workload data from EasyVirt\footnote{\url{https://www.easyvirt.com/}}. The baseline was a combination of the First Fit Decreasing algorithm with overcommit techniques.
+
+The work from \citet{Courchelle}  studies the problem of scheduling virtual machines to a data center that has batteries and solar panels, considering several actual input parameters (workload, solar panel power output and battery storage capacity).
+
+The authors explore the use of greedy algorithms to try to solve this problem, as greedy algorithms are fast and therefore address users' virtual machine submissions and intermittent solar energy in a short time.
+
+
+The authors used the RenewSim simulator with VM Workload from Google and developed a model to predict the solar power generation. The virtual machines execution in the simulator tried to follow the availability of solar power: upon receiving a submission, if there is enough solar power to run the virtual machine, a server is chosen, and the virtual machine has its execution started. If, during the VMs execution the availability of solar energy runs out, the algorithm tries to use the energy from the batteries. If the batteries are not sufficiently charged, grid power is purchased.
+
+As baseline, the authors used the greedy algorithms Round Robin and First Fit with the following adaptations: i) Round Robin and server classes, where servers are classified into classes, for example, classes based on application runtime  (long, medium and short) and for each class Round Robin is applied; ii) Round Robin and longest processing time, where the VMs with highest runtime have higher priority and then Round Robin is applied; iii) First Fit and longest processing time: same as ii, but using the First Fit algorithm.
+
+The SGEESS \citep{sgeess} study aims to increase renewable energy use and reduce operating costs for data centers while ensuring a high-quality rate for the tasks submitted. The proposed solution uses a scheduling algorithm for VMs that have as input the prediction of renewable power generation and the dynamic price of electricity. The objective of the scheduling algorithm is to determine which server and when each task should be executed.
+
+The work considers short-term solar energy prediction, one day after receiving tasks. Tasks, which consist of virtual machines that are submitted for execution, are divided into two groups according to their priority: crucial, higher priority, requiring a short-term response, and non-crucial, lower priority, requiring no response in a short time.
+
+Upon receiving a request, the scheduler will allocate the VM to a server, so it needs to select where (which server) and when (which time step) the VM will be executed. The algorithm considers these criteria, in the following order: i)   highest availability of renewable energy, and does not cause deadline violation from other tasks; ii)  lowest electricity price, and does not cause deadline violation of other tasks; iii)  highest availability of renewable energy; iv)   lowest electricity price.
+
+The authors considered that the servers are homogeneous and, concerning the virtual machines that were submitted, initially they generated their data for investigation, separating the VMs into three groups according to the execution time: i) small---up to 600 seconds; ii) medium---between 600 and 1800 seconds; and iii) long---between 1800 and 3600 seconds.
+
+The authors developed a simulator that used solar power generation data from Brussels\footnote{\url{https://www.elia.be/en/grid-data/power-generation/solar-pv-power-generation-data}} for July 2012 and VM Workload data from the Google database.
+
+The work used as baseline systems two adaptations of the First Fit algorithm. The first chose the moment with the highest amount of renewable energy and with available computational resources to execute the task. The second used as a criterion the electricity price value  (chose the moment with the lowest price). A greedy algorithm was also used, combining these two strategies: choose the instant of time that has the highest availability of renewable energy or the lowest price of electricity.
+
+
+The study by \citet{gu2016} aims to reduce nonrenewable energy consumption in a data center that, in addition to being supplied by nonrenewable energy, has a wind and solar power supply, as well as batteries to store renewable or nonrenewable energy (when the price is low). The work has two main objectives. The first is to allocate servers and use different power sources so that the quality of service criteria are met, and the total energy cost is minimized. The second objective is to optimize constraints on quality of service and minimization of carbon emissions, given an energy cost budget,  by scheduling the VMs. To achieve these goals, the authors propose the use of integer linear programming.
+
+When the power supply is plentiful and the price is low, the energy will be stored in the batteries. In contrast, when the power supply does not meet the demand, the batteries are used to meet the demand of the data centers.
+
+The work used MATLAB to develop the models for the experiments and VM workload from Wikimedia and solar power generation from the US laboratory MIDC NREL\footnote{\url{https://midcdmz.nrel.gov/}}.
+
+The study considered two baseline systems with integer linear programming approaches: the first had the goal to minimize the total energy cost, and for the second, the goal was to minimize carbon emissions. Both baseline systems did not consider the use of batteries.
+
+
+DATAZERO \citep{datazero} is a study that explores the possibility of a data center whose energy demand is met by solar energy. Because solar energy is intermittent, the authors use batteries and fuel cells to store short and long term energy, respectively.
+
+The authors propose a negotiation protocol---which adopts game theory--- that has two players: the energy player and the information technology player. The goal is to optimize the relationship between the demand of the information technology player and the energy supply of the electric energy player. Using the negotiating module, each player optimizes its operations internally and then finds a mutually agreed solution.
+
+DATAZERO models both information technology and energy players. Regarding IT modeling, two types of tasks are considered: batches, which have execution deadlines, and services that run continuously. Task modeling also features resource consumption profiles, which are used to estimate energy consumption.
+
+The negotiation protocol is not intended to find the best overall solution, but a cost-effective solution for both parties, and is made up of three modules: IT decision module, power decision module, and the negotiation module. These modules communicate with each other through the exchange of electricity profiles. For the IT module, an electricity profile refers to the amount of energy required to supply its resources at any given time. For the power module, the electricity profile represents the amount of renewable energy available to be supplied to the data center.
+
+The IT module uses a greedy heuristic---Best Fit---to optimize the scheduling of tasks submitted to the data center, and the power module utilizes linear programming techniques to optimize the decision of the electricity supply.
+
+In order to perform their experiments, the authors developed an integer linear programming model in MATLAB that used solar power data from The National Solar Radiation Data Base (NSRDB)\footnote{\url{https://nsrdb.nrel.gov/}} and actual data generated by a SmartGrid prototype. Regarding VM workload, a data generator from the literature was used that produces results similar to the Google database.
+
+The baseline systems used was a version of the Best-Fit algorithm and the work from literature called GreenSlot\citep{GreenSlot} .
+
+
+\begin{sidewaystable}
+  \centering
+  \caption{Summary of the literature review}
+\renewcommand{\arraystretch}{1.4}
+  \begin{tabular}{p{12em}p{9em}p{6em}p{10em}p{10em}p{9em}} \toprule
+  
+   &  & & \multicolumn{2}{c}{\textbf{Databases}} &   \\ 
+  
+    \textbf{Study} & \textbf{Technique} & \textbf{Simulator} & \textbf{Renewable Energy} & \textbf{VM Workload} & \textbf{Baseline}\\ \midrule
+
+    \citet{SAGITTA} & Stochastic, Greedy Heuristic & DCSim & University of Nantes & ClarkNet HTTP  &  Round Robin\\
+    
+
+    \citet{NEMESIS} & Greedy Heuristic & SimGrid & University of Nantes & Eucalyptus IaaS, Google  &  Round Robin, First Fit
+    Modified Best Fit Decreasing (MBFD)
+    OOD-MARE\\
+
+    \citet{SCORPIOUS} & Greedy Heuristic & SimGrid & University of Nantes & Google  &  Round Robin, First Fit\\
+
+
+    \citet{PIKA} & Greedy Heuristic & Proprietary & University of Nantes & EasyVirt  &  First Fit Decreasing\\
+
+    \citet{li2017} & Greedy Heuristic & Proprietary & University of Nantes & University of Nantes  &  First Fit Decreasing, overcommit\\
+
+    \citet{Courchelle} & Greedy Heuristic & RenewSim  & Prediction Model & Google & Round Robin,  First Fit \\
+
+    \citet{sgeess} & Greedy Heuristic & Proprietary  & Brussels 06/2012 & Google  & First Fit \\
+
+    \citet{gu2016} & Integer Linear Programing & MATLAB  & MIDC NREL & Wikimedia  & Integer Linear Programing \\
+
+    \citet{datazero} & Greedy Heuristic, Integer Linear Programing, Game Theory  & MATLAB, SimGrid & NSRDB & Google & Best-Fit, GreenSlot \\
+
+     \bottomrule
+  \end{tabular}
+  \label{tab:review}
+\end{sidewaystable} 
+The work from \citet{taxonomy} presents a literature review that contains the state-of-the-art, at the time in which the article was written, on research related to the application of renewable energy for cloud computing data centers. The authors focus on five aspects: i) models of renewable energy generation; ii) renewable energy prediction models; iii) capacity planning for data centers; iv) workload scheduling internally within data centers; v) load balancing between geographically distributed data centers. According to the authors, the main challenge in using renewable energy in data centers is their variable, intermittent, and unpredictable nature. They believe that future research in the area should address the combination of uncertainty in data center power demand and multiple power sources in a complementary way.
+
+
+\subsection{Open challenges}
+Based on this literature review, summarized on table \ref{tab:review}, it is possible to observe that the problem of reduction of nonrenewable energy consumption in geographically distributed cloud computing platforms is being approached in a variety of ways, particularly with greedy heuristics. Given that virtual machine requests sent to data centers must be met as quickly as possible to comply with quality of service constraints, it is feasible to use greedy heuristics. Even if not always delivering the best overall solution possible, they find an acceptable solution in a short time. Some of the studies raised consider the use of batteries, however, do not consider the scenario of geographically distributed computational clouds, which will be addressed in the present work.
+
+
+\section{Methodology}
+
+This research project has two main goals targeting a reduction in the brown energy consumption: to develop a multi-objective scheduling algorithm for the VMs that are submitted to data centers; and to estimate the dimensions of solar panels and batteries for data centers according to its size and the workload it receives. The activities of the project can be grouped into four main phases.
+
+
+\begin{table}
+\centering
+\caption{ Quarterly Activity Schedule (PhD)  }
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|} 
+\cline{2-17}
+\multicolumn{1}{c|}{}                                                                                                                      & \multicolumn{4}{c|}{\textbf{2020 }}               & \multicolumn{4}{c|}{\textbf{2021 }}               & \multicolumn{4}{c|}{\textbf{2022 }}               & \multicolumn{4}{c|}{\textbf{2023 }}                \\ 
+\hline
+\textbf{Activity}                                                                                                                         & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4} & \textbf{1} & \textbf{2} & \textbf{3} & \textbf{4}  \\ 
+\hline
+Systematic Review                                                                                                                                  &  x          &            &            &            &            &            &            &            &            &            &            &            &            &            &            &             \\ 
+\hline
+\begin{tabular}[c]{@{}c@{}}Modeling of distributed\\ cloud platforms\end{tabular}                                      & x          & x          & x          & x          &            &            &            &            &            &            &            &            &            &            &            &             \\ 
+\hline
+\begin{tabular}[c]{@{}c@{}}Modeling of the\\ electricity network \end{tabular}                                                                                                                    &            &            & x          & x          & x          & x          &            &            &            &            &            &            &            &            &            &             \\ 
+\hline
+Modeling of the batteries~                                                                                                                               &            &            &            &            & x          & x          & x          & x          &            &            &            &            &            &            &            &             \\ 
+\hline
+\begin{tabular}[c]{@{}c@{}}Development of~\\ scheduling heuristics\end{tabular}                        &                          &            & x          & x          & x          & x          & x          & x          & x          & x          & x          & x          &            &            &            &             \\ 
+\hline
+\begin{tabular}[c]{@{}c@{}}Development of algorithms\\to decide whether use\\ or recharge the batteries\end{tabular}                         &            &            &            &            &            & x          & x          & x          & x          & x          & x          & x          &            &            &            &             \\ 
+\hline
+\begin{tabular}[c]{@{}c@{}}Development of the\\ prediction model\\ for solar panels and\\ batteries dimensioning\end{tabular}                                                              &               &                        &            &            &            &            &            &            &            & x          & x          & x          & x          & x          &            &             \\ 
+\hline
+Workload preparation                                                                                                                                      &            & x          &            &            &            &            &            &            &            &            &            &            &            &            &            &             \\ 
+\hline
+\begin{tabular}[c]{@{}c@{}}Collect data about \\ solar power generation\end{tabular}                                                                                                                           &            & x          &            &            &            &            &            &            &            &            &            &            &            &            &            &             \\ 
+\hline
+Execution of simulations                                                                                                                                   &            &            & x          & x          & x          & x          & x          & x          & x          & x          & x          & x          & x          & x          &            &             \\ 
+\hline
+\begin{tabular}[c]{@{}c@{}}Analysis of the results\\ from simulations  \end{tabular}                                                                                                                                    &            &            &            & x          & x          & x          & x          & x          & x          & x          & x          & x          & x          &            &            &             \\ 
+\hline
+Sharing of the results                                                                                                                                &            &            & x          & x          &            &            & x          & x          &            &            & x          & x          &            &            & x          & x           \\ 
+\hline
+Writing of the thesis                                                                                                                                          &            &            &            &            &            &            &            &            &            &            &           &           & x          & x          & x          & x           \\
+\hline
+\end{tabular}
+\label{tab:cronograma_doutorado}
+\end{table}
+
+In the first phase, the systematic literature review will be finished in order to understand the state of the art and see what approaches and techniques are being explored. The modeling of distributed cloud platforms, electricity network, and batteries will also occur, which will be the foundation for the development of the scheduling heuristics. The virtual machine workload and solar power generation data, input for our simulations, will be collected in this phase as well.
+
+In the second phase, we will develop the algorithms for scheduling the virtual machines and deciding when to use or store energy into the batteries. The development of both algorithms will adopt the concept of \textit{iterative and incremental development} from software engineering as a way to validate the algorithms better and refine them at each iteration. In this phase, the execution of simulations will start. The SimGrid framework was selected to support the development of the simulations because it accurately models energy consumption, VM and live-migration, is scalable and is well tested by the scientific community, with over 20 years of usage.
+
+The third phase will be characterized by the development of the prediction model for solar panels and batteries dimensions. The input for the prediction model will consist of information about the size of the virtual machine workload the data center receives, the size of the data center regarding the number of servers. The output of the prediction model will be the dimensions of batteries and solar panels that a data center needs to install in order to reduce its brown energy consumption.
+
+Finally, in the last phase, the results from the simulations will be collected and shared on journals and conferences, specifically in the area of green cloud computing and distributed computing. In this phase, the writing of the thesis will also occur.
+
+Table \ref{tab:cronograma_doutorado} lists the full set of activities planned for this research project.
+
+\subsection{Validation}
+
+To assess the proposed scheduling heuristics the following metrics, collected from the simulations, will be considered:
+total energy consumption; the percentage of renewable energy used related to the total; the percentage of power from other data centers related to total; the percentage of energy used from batteries; and makespan.
+
+The metrics will be compared to those obtained from the following state of the art approaches: scheduling with Round-Robin heuristic; scheduling with First-Fit heuristic; scheduling with Modified Best Fit Decreasing (MBFD) heuristic; work by \citet{Courchelle}; work by \citet{datazero}; and the work by \citet{sgeess}.
+
+
+In respect to validating the prediction model of the batteries and solar panels dimensions, multiple simulations will be executed. Each simulation will have a different value of the dimensions of the solar panels and batteries for each instance of the data center. An instance is characterized by the size of the virtual machine workload the data center receives and the number of servers it contais. In order to obtain the best values for the dimensions, we will collect the total energy consumption and the ration between brown and green energy consumed from these simulations. Finally, to evaluate the accuracy of the prediction model, a comparison between the output of the model and the values of the best dimensions will be performed.
+
+
+\subsection{Share of results}
+
+The contributions of this project are relevant to the area of green cloud computing and distributed cloud computing. The results can be shared on the following conferences and journals: SMARTGREENS  - International Conference on SmartCities and Green ICT Systems, IEEE International Conference on Cluster Computing (CLUSTER), International Symposium on Computer Architecture and High Performance Computing (SBAC-PAD), Journal of Systems and Software, and  Future Generation Computer Systems.
+
+
+\subsection{Contributions}
+
+Specifically, the project will produce: a multi-objective  scheduling algorithm for virtual machines to reduce nonrenewable energy consumption in distributed cloud computing platforms; a model of geographically distributed cloud computing platform with renewable energy supply through solar panels and use of batteries; a model to estimate the dimensions of solar panels and batteries to meet the demand of a data center; and an implementation of the algorithm in the simulator SimGrid.
+
+
+\section{Collaboration with other research groups}
+
+The current project will be developed in the context of the project for smart cities InterSCity \citep{smartgreens17} a research project hosted by the INCT (Instituto Nacional de Ciência e Tecnologia) of the Future Internet applied for Smart Cities (15/24485-9), financed by FAPESP, CAPES and CNPq. 
+
+This project will also occur as Double Degree between Universidade de São Paulo and Université Grenoble Alpes, in collaboration with expert researchers, specifically, Fanny Dufossé, an expert in green distributed cloud computing,  and Denis Trystram, an expert in scheduling theory
+
+\singlespacing
+
+
+\bibliography{bibliography}
+
+
+\end{document}
+
